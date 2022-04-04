@@ -1,20 +1,37 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Bloglist from './Bloglist'
 const Home = () => {
-    const [blogs, setBlogs] = useState([
-    { title:"Then he was it", author:"Ben Lawson", id:1},
-    { title:"Financial Stability", author:"Judgse ruth", id:2},
-    { title:"The transport system", author:"Abdul Mohammed", id:3},
-    ])
-
-    const handledelete = (id) => {
-        const newblogs = blogs.filter((blog) => blog.id !== id)
-        setBlogs(newblogs);
+    const [blogs, setBlogs] = useState(null)
+    const [isloading, setIsloading] = useState(true);
+    const getblogs = async() => {
+      try{
+        const api = await fetch('http://localhost:4000/blogs');
+        if(!api.ok){
+          throw Error('could not fetch the data')
+        }
+        const response = await api.json();
+        setBlogs(response);
+        setIsloading(false)
+      }
+      catch(error){
+        console.log(error.message)
+      }
     }
+    useEffect(() => {
+      
+        getblogs();
+     
+       
+    }, [])
+
+  
   return (
     <div className='home'>
-       <Bloglist title="All Blogs" blogs={blogs} handledelete={handledelete}/>
+        {isloading && <div>Loading....</div>}
+      { 
+      blogs && <Bloglist title="All Blogs" blogs={blogs}/>
+      }
     </div>
   )
 }
