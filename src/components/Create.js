@@ -1,20 +1,28 @@
 import React from 'react'
 import {useState} from 'react'
+import { useHistory } from 'react-router-dom'
 
 export const Create = () => {
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('');
   const [author, setAuthor] = useState('rimi');
+  const [ispending, setIspending] = useState(false);
+
+  const history = useHistory()
 
   const submit = (e) => {
       e.preventDefault();
+
+      
       const blog = {title, body, author};
+      setIspending(true)
       fetch('http://localhost:4000/blogs', {
         method:'POST',
         headers:{'content-Type':'Application/json'},
         body:JSON.stringify(blog)
       }).then(() => {
-        console.log('new blog added');
+        setIspending(false);
+        history.go(-1);
       })
   }
 
@@ -36,7 +44,7 @@ export const Create = () => {
             <option value="rimi">rimi</option>
             <option value="ife">ife</option>
           </select>
-          <button>Add blog</button>
+          {!ispending ? <button>Add blog</button> : <button>Loading....</button>}
         </form>
     </div>
   )
